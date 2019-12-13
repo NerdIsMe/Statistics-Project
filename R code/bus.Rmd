@@ -1,0 +1,263 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library("readxl")
+```
+
+```{r}
+bus107<-read_xlsx("/Users/fhh1482/Desktop/107bus2.xlsx")
+company_count<-table(bus107$客運公司)
+print(company_count)
+company_name<-c("大都會客運","欣欣客運","首都客運","台北客運","東南客運","指南客運","大有巴士","大南汽車","光華巴士","中興巴士","三重客運","新店客運","淡水客運","聯營","無資料")
+
+
+bus107_df<-data.frame(company_count,company_name)
+colnames(bus107_df)<-c("num","busNum","companyName")
+print(bus107_df)
+totalbus<-sum(bus107_df$busNum)
+totalbus<-(totalbus-167)
+
+proportion<-bus107_df$busNum/(totalbus)
+bus107_df<-cbind(bus107_df,proportion)
+print(bus107_df)
+```
+
+```{r}
+# 將資料依照不同客運公司取出來
+bus107_1<-list()
+bus107_2<-list()
+bus107_3<-list()
+bus107_4<-list()
+bus107_5<-list()
+bus107_6<-list()
+bus107_7<-list()
+bus107_8<-list()
+bus107_9<-list()
+bus107_10<-list()
+bus107_11<-list()
+bus107_12<-list()
+bus107_13<-list()
+bus107_14<-list()
+
+
+for(i in 1:463)
+{
+    if(bus107[i,9] == 1)
+    {
+      bus107_1<-rbind(bus107_1,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 2)
+    {
+      bus107_2<-rbind(bus107_2,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 3)
+    {
+      bus107_3<-rbind(bus107_3,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 4)
+    {
+      bus107_4<-rbind(bus107_4,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 5)
+    {
+      bus107_5<-rbind(bus107_5,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 6)
+    {
+      bus107_6<-rbind(bus107_6,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 7)
+    {
+      bus107_7<-rbind(bus107_7,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 8)
+    {
+      bus107_8<-rbind(bus107_8,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 9)
+    {
+      bus107_9<-rbind(bus107_9,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 10)
+    {
+      bus107_10<-rbind(bus107_10,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 11)
+    {
+      bus107_11<-rbind(bus107_11,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 12)
+    {
+      bus107_12<-rbind(bus107_12,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 13)
+    {
+      bus107_13<-rbind(bus107_13,bus107[i,])
+    }
+}
+for(i in 1:463)
+{
+    if(bus107[i,9] == 14)
+    {
+      bus107_14<-rbind(bus107_14,bus107[i,])
+    }
+}
+
+print(typeof(bus107_1))
+
+```
+
+## 對公司1號（大都會客運）做抽樣
+```{r}
+sample_num<-50
+set.seed(11217)
+bus107_1<-data.frame(bus107_1)
+#print(bus107_1)
+# random select 50*0.16 rows
+bus107_1_sample<-bus107_1[sample(nrow(bus107_1), 8), ]
+print(bus107_1_sample)
+
+```
+
+## 對公司2號（欣欣客運）做抽樣
+```{r}
+
+bus107_2<-data.frame(bus107_2)
+#print(bus107_2)
+# random select 50*0.13 rows
+bus107_2_sample<-bus107_2[sample(nrow(bus107_2),7 ), ]
+print(bus107_2_sample)
+
+```
+
+## 對公司3號（首都客運）做抽樣
+```{r}
+bus107_3<-data.frame(bus107_3)
+#print(bus107_3)
+# random select 50*0.15 rows
+bus107_3_sample<-bus107_3[sample(nrow(bus107_3),8 ), ]
+print(bus107_3_sample)
+```
+
+## 對公司4號（台北客運）做抽樣
+```{r}
+bus107_4<-data.frame(bus107_4)
+#print(bus107_4)
+# random select 50*0.04 rows
+bus107_4_sample<-bus107_4[sample(nrow(bus107_4),2 ), ]
+print(bus107_4_sample)
+```
+
+## 對公司5號（東南客運）做抽樣
+```{r}
+bus107_5<-data.frame(bus107_5)
+#print(bus107_5)
+# random select 50*0.07 rows
+bus107_5_sample<-bus107_5[sample(nrow(bus107_5),4 ), ]
+print(bus107_5_sample)
+```
+
+## 對公司6號（指南客運）做抽樣
+```{r}
+bus107_6<-data.frame(bus107_6)
+#print(bus107_6)
+# random select 50*0.06 rows
+bus107_6_sample<-bus107_6[sample(nrow(bus107_6),3 ), ]
+print(bus107_6_sample)
+```
+
+## 對公司7號（大有巴士）做抽樣
+```{r}
+bus107_7<-data.frame(bus107_7)
+#print(bus107_7)
+# random select 50*0.01 rows
+bus107_7_sample<-bus107_7[sample(nrow(bus107_7),1 ), ]
+print(bus107_7_sample)
+```
+
+## 對公司8號（大南汽車）做抽樣
+```{r}
+bus107_8<-data.frame(bus107_8)
+#print(bus107_8)
+# random select 50*0.1 rows
+bus107_8_sample<-bus107_8[sample(nrow(bus107_8),5 ), ]
+print(bus107_8_sample)
+```
+
+## 對公司9號（光華巴士）做抽樣
+```{r}
+bus107_9<-data.frame(bus107_9)
+#print(bus107_9)
+# random select 50*0.1 rows
+bus107_9_sample<-bus107_9[sample(nrow(bus107_9),5 ), ]
+print(bus107_9_sample)
+```
+
+## 對公司10號（中興巴士）做抽樣
+```{r}
+bus107_10<-data.frame(bus107_10)
+#print(bus107_10)
+# random select 50*0.06 rows
+bus107_10_sample<-bus107_10[sample(nrow(bus107_10),3 ), ]
+print(bus107_10_sample)
+```
+
+## 對公司11號（三重客運）做抽樣
+```{r}
+bus107_11<-data.frame(bus107_11)
+#print(bus107_11)
+# random select 50*0.06 rows
+bus107_11_sample<-bus107_11[sample(nrow(bus107_11),3 ), ]
+print(bus107_11_sample)
+```
+
+## 對公司12號（新店客運）做抽樣
+```{r}
+bus107_12<-data.frame(bus107_12)
+#print(bus107_12)
+# random select 50*0.02 rows
+bus107_12_sample<-bus107_12[sample(nrow(bus107_12),1 ), ]
+print(bus107_12_sample)
+```
+

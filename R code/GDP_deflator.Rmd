@@ -1,0 +1,27 @@
+---
+title: "GDP Deflator"
+output: html_notebook
+---
+
+```{r}
+library(readxl)
+library(xlsx)
+data_address = "C:\\Users\\Jerome\\Desktop\\2019_Fall\\Statistics\\期末Project\\Statistics-Project\\data\\statistic_project_data.xlsx" 
+
+data <- read_excel(data_address, sheet = "income")
+GDP_deflator <- read_excel("C:\\Users\\Jerome\\Desktop\\2019_Fall\\Statistics\\期末Project\\Statistics-Project\\data\\GDP_deflator.xls", sheet = 2)
+#GDP_deflator
+#data$
+data_length = length(data$Year)
+deflated_data = matrix(rep(0, 2*data_length), nrow = data_length)
+deflated_data[,1] = data$Year
+
+for (i in 1:data_length)
+{
+  deflated_data[data_length + 1 - i,2] = 100 * data$AveIncome[data_length + 1 - i] /GDP_deflator$Deflator[length(GDP_deflator$Deflator) +1 - i]
+}
+row.names(deflated_data) = data$Year
+colnames(deflated_data) = list("Year", "Deflated Income")
+
+write.xlsx(deflated_data, file = data_address, append = T, sheetName = "Delated Income", row.names = F)
+```
