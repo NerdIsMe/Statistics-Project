@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: 108-1 Statistic Project -preprocessing
+---
+
+Load the library.
+
+```{r}
+library(readxl)
+library(writexl)
+```
+
+## Bus Efficiency
+
+read the excel file.
+
+```{r}
+be <- read_excel("data/bus_efficiency.xlsx", na=c("-","..."))
+print(be)
+```
+
+```{r}
+years <- be$...1[!is.na(be$...1)]
+cnt <- 1
+for (y in years) {
+  y <- substr(y, 1, nchar(y)-1)
+  be$...1[cnt] <- y
+  cnt = cnt + 1
+  while(cnt <= length(be$...1) && is.na(be$...1[cnt])) {
+    be$...1[cnt] <- y
+    cnt = cnt + 1
+  }
+}
+print(be)
+```
+
+```{r}
+be <- be[complete.cases(be),]
+yearcnt <- table(as.numeric(be$...1))
+print(yearcnt)
+```
+
+```{r}
+plot(cbind(names(yearcnt), yearcnt), main = "Number of Bus Lines", xlab = "year", ylab = "counts")
+lines(cbind(names(yearcnt), yearcnt))
+```
+
+```{r}
+# "...1", "...2", "行駛段次(段次)", "行駛里程(車公里)", "載客人次(人次)", "每段次平均載客(人次)", "客運收入(元)", "每車公里營收(元)"
+colnames(be) <- c("Year", "Name", "Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
+print(head(be))
+```
+
+```{r}
+write_xlsx(be, path = "data/bus_efficiency_revised.xlsx")
+```
+
+
+
