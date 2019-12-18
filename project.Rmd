@@ -48,5 +48,8 @@ for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
 print(cor(bus_avg))
 ```
 
+```{r}
+print(cor(bus[,3:ncol(bus)]))
+```
 
 
