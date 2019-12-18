@@ -1,0 +1,81 @@
+---
+title: "GDP Deflator"
+output: html_notebook
+---
+# input deflator
+```{r}
+library(readxl)
+library(xlsx)
+GDP_deflator <- read_excel("data\\GDP_deflator.xlsx", sheet = 2)
+GDP_deflator
+```
+
+
+# statistic_project_data
+```{r}
+data_address = "C:\\Users\\Jerome\\Desktop\\2019_Fall\\Statistics\\期末Project\\Statistics-Project\\data\\statistic_project_data.xlsx" 
+
+data <- read_excel(data_address, sheet = "income")
+
+#data
+data_length = length(data$Year)
+deflated_data = matrix(rep(0, 2*data_length), nrow = data_length)
+deflated_data[,1] = data$Year
+
+for (i in 1:data_length)
+{
+  deflated_data[data_length + 1 - i,2] = 100 * data$AveIncome[data_length + 1 - i] /GDP_deflator$Deflator[length(GDP_deflator$Deflator) +1 - i]
+}
+row.names(deflated_data) = data$Year
+colnames(deflated_data) = list("Year", "Deflated Income")
+
+write.xlsx(deflated_data, file = data_address, append = T, sheetName = "Delated Income", row.names = F)
+```
+
+# bus_efficiency_revised
+```{r}
+data_address = "data\\bus_efficiency_revised.xlsx"
+data = read_excel(data_address)
+#rename = names(data)
+#rename[7] = "Deflated.Profit"
+#rename[8] = "Deflated.Average.Profit"
+
+#data
+data_length = length(data$Profit)
+deflated_data_pro = rep(0, data_length)
+deflated_data_pro_perKM = rep(0, data_length)
+
+# 86~107
+
+deflator_name = seq(40, 107, 1)
+
+for (i in data_length:1)
+{
+  year = data$Year[i]
+  
+  for (j in length(deflator_name):1)
+  {
+    if (year == deflator_name[j])
+    {
+      data$Profit[i] = 100 *data$Profit[i] /GDP_deflator$Deflator[j]
+      data$Average.Profit[i] = 100*data$Average.Profit[i]/GDP_deflator$Deflator[j]
+      break
+    }
+    else
+      deflator_name[-length(deflator_name)]
+  }
+}
+
+write.xlsx(data, file = data_address, append = T, sheetName = "Deflated Profit", row.names = F)
+```
+
+
+# bus_efficiency_revised
+
+
+
+
+
+
+
+
