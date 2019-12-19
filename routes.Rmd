@@ -1,0 +1,26 @@
+---
+title: "R Notebook"
+output: Bus Routes
+---
+
+read the json file of routes data
+
+```{r}
+routes <- jsonlite::fromJSON(txt = "data/Routes.json")
+print(head(routes))
+```
+
+## routes' names
+
+```{r}
+print(head(routes$RouteName))
+print(head(routes$RouteName$Zh_tw))
+```
+
+## parse the line of the 5th route
+
+```{r}
+geo <- as.data.frame(matrix(as.numeric(unlist(strsplit(unlist(as.list(strsplit(substring(routes$Geometry[5],13,nchar(routes$Geometry[5])-1), ", ")[[1]])), " "))), ncol=2, byrow=TRUE))
+colnames(geo) <- c("longitude", "latitude")
+print(geo)
+```
