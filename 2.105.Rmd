@@ -1,0 +1,295 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(readxl)
+library(moments)
+data <- read_excel("data/bus_efficiency_revised.xlsx")
+#data
+data_105 = data[data[, "Year"] == 105,]
+out_mat = matrix(, ncol = 7)
+colnames(out_mat) = c("Bus", names(data_105)[-1:-2])
+out_mat
+```
+## Times
+
+#### Boxplot
+```{r}
+options(scipen=999)# 不使用科學記號
+
+boxplot(data_105$Times/10000, horizontal = T, main = "民國105年 公車行駛段次", xlab = "次數（萬次）")
+out_values = boxplot.stats(data_105$Times)$out
+
+index = which(data_105$Times %in% out_values)
+#length(data_105$Year)
+
+print("Outliers:")
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_105$Times[index[i]], sep = ": ")
+  
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Times"] = data_105$Times[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  
+  print(tempt)
+}
+out_mat = out_mat[-1,]
+
+
+```
+#### histogram
+```{r}
+
+hist(data_105$Times/10000, main = "民國105年 公車行駛段次",xlab = "次數（萬次）", breaks = seq(0,55,5), ylim = c(0,200), col = blues9)
+
+s = skewness(data_105$Times/10000)
+cat("Skewness = ", s, sep = "")
+```
+- $Skewness\ = 2.546406\implies\ Right\ Skewed$ 
+
+##Length
+
+#### Boxplot
+```{r}
+data_col = data_105$Length
+boxplot(data_col/10000, horizontal = T, main = "民國105年 公車行駛里程", xlab = "里程（萬公里）")
+out_values = boxplot.stats(data_col)$out
+
+index = which(data_col %in% out_values)
+
+print("Outliers:")
+
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_col[index[i]], sep = ": ")
+  print(tempt)
+  
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Length"] = data_col[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  else
+  {
+    out_mat[mat_int, "Length"] = data_col[index[i]]
+  }
+}
+out_mat
+#out_values
+```
+
+#### histogram
+```{r}
+
+hist(data_col/10000, main = "民國105年 公車行駛里程", xlab = "里程（萬公里）",  ylim = c(0,200), col = blues9)
+
+s = skewness(data_col/10000)
+cat("Skewness = ", s, sep = "")
+```
+- $Skewness\ = 2.6528\implies\ Right\ Skewed$ 
+
+## Customer
+#### Boxplot
+```{r}
+data_col = data_105$Customer
+boxplot(data_col/10000, horizontal = T, main = "民國105年 公車載客人次", xlab = "人次（萬人）")
+out_values = boxplot.stats(data_col)$out
+
+index = which(data_col %in% out_values)
+
+print("Outliers:")
+
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_col[index[i]], sep = ": ")
+  print(tempt)
+  
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Customer"] = data_col[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  else
+  {
+    out_mat[mat_int, "Customer"] = data_col[index[i]]
+  }
+}
+#out_values
+```
+
+#### histogram
+
+```{r}
+
+hist(data_col/10000, main = "民國105年 公車行駛里程", xlab = "里程（萬公里）",  ylim = c(0,200), col = blues9)
+
+s = skewness(data_col/10000)
+cat("Skewness = ", s, sep = "")
+```
+- $Skewness\ = 3.003583\implies\ Right\ Skewed$ 
+
+## Average.Customer
+
+#### Boxplot
+```{r}
+data_col = data_105$Average.Customer
+boxplot(data_col, horizontal = T, main = "民國105年 公車每段平均載客", xlab = "人次")
+out_values = boxplot.stats(data_col)$out
+
+index = which(data_col %in% out_values)
+
+print("Outliers:")
+
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_col[index[i]], sep = ": ")
+  print(tempt)
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Average.Customer"] = data_col[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  else
+  {
+    out_mat[mat_int, "Average.Customer"] = data_col[index[i]]
+  }
+}
+
+#out_values
+```
+
+#### histogram
+```{r}
+
+hist(data_col, main = "民國105年 公車每段平均載客", xlab = "人次",  ylim = c(0,200), col = blues9)
+
+s = skewness(data_col/10000)
+cat("Skewness = ", s, sep = "")
+```
+
+##Profit
+
+#### Boxplot
+```{r}
+data_col = data_105$Profit
+boxplot(data_col/10000, horizontal = T, main = "民國105年 客運收入", xlab = "元（萬元）")
+out_values = boxplot.stats(data_col)$out
+
+index = which(data_col %in% out_values)
+
+print("Outliers:")
+
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_col[index[i]], sep = ": ")
+  print(tempt)
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Profit"] = data_col[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  else
+  {
+    out_mat[mat_int, "Profit"] = data_col[index[i]]
+  }
+}
+
+#out_values
+```
+
+#### histogram
+```{r}
+
+hist(data_col/10000, main = "民國105年 客運收入", xlab = "元（萬元）",  ylim = c(0,250), col = blues9)
+
+s = skewness(data_col)
+cat("Skewness = ", s, sep = "")
+```
+
+##Average.Profit
+
+#### Boxplot
+```{r}
+data_col = data_105$Average.Profit
+boxplot(data_col, horizontal = T, main = "民國105年 公車 每車公里營收
+", xlab = "元")
+out_values = boxplot.stats(data_col)$out
+
+index = which(data_col %in% out_values)
+
+print("Outliers:")
+
+for (i in 1:length(index))
+{
+  tempt = paste(data_105$Name[index[i]], data_col[index[i]], sep = ": ")
+  print(tempt)
+  mat_int = match(data_105$Name[index[i]], out_mat[, 1])
+  if(is.na(mat_int))
+  {
+    out_mat = rbind(out_mat,rep(-1, 7))
+    out_mat[length(out_mat[,1]), "Average.Profit"] = data_col[index[i]]
+    out_mat[length(out_mat[,1]), "Bus"] = data_105$Name[index[i]]
+  }
+  else
+  {
+    out_mat[mat_int, "Average.Profit"] = data_col[index[i]]
+  }
+}
+
+#out_values
+```
+
+#### histogram
+```{r}
+
+hist(data_col, main = "民國105年 公車 每車公里營收
+", xlab = "元", col = blues9, breaks = seq(0,200,10))
+
+s = skewness(data_col)
+cat("Skewness = ", s, sep = "")
+```
+```{r}
+out_mat
+```
+## Compute the Coefficient of Correlation
+
+```{r}
+r_mat = matrix(rep(0,36), ncol = 6)
+row.names(r_mat) = colnames(out_mat)[-1]
+colnames(r_mat) = colnames(out_mat)[-1]
+for (i in c(1:6))
+{
+  for (j in c(1:6))
+  {
+    if (i == j)
+      next
+    else if (r_mat[j, i] != 0)
+      r_mat[i, j] = r_mat[j, i]
+    else
+    {
+      r_mat[i, j] = cor(data_105[,2+i], data_105[,2+j])
+    }
+  }
+}
+
+r_mat
+```
+

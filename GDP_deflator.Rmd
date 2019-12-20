@@ -36,6 +36,7 @@ write.xlsx(deflated_data, file = data_address, append = T, sheetName = "Delated 
 ```{r}
 data_address = "data\\bus_efficiency_revised.xlsx"
 data = read_excel(data_address)
+org = data
 #rename = names(data)
 #rename[7] = "Deflated.Profit"
 #rename[8] = "Deflated.Average.Profit"
@@ -65,12 +66,13 @@ for (i in data_length:1)
       deflator_name[-length(deflator_name)]
   }
 }
+data_f = data.frame(data)
 
-write.xlsx(data, file = data_address, append = T, sheetName = "Deflated Profit", row.names = F)
+write.xlsx(data_f, file = data_address, append = T, sheetName = "Deflated Profits", row.names = FALSE)
 ```
 
 
-# bus_efficiency_revised
+
 
 
 
