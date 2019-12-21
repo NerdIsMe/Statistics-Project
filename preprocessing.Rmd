@@ -51,9 +51,6 @@ colnames(be) <- c("Year", "Name", "Times", "Length", "Customer", "Average.Custom
 print(head(be))
 ```
 
-```{r}
-write_xlsx(be, path = "data/bus_efficiency_revised.xlsx")
-```
 
 
 

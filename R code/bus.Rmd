@@ -1,8 +1,6 @@
 ---
 title: "R Notebook"
-output:
-  html_document:
-    df_print: paged
+output: Bus Sampling
 ---
 
 ```{r}
@@ -10,8 +8,8 @@ library("readxl")
 ```
 
 ```{r}
-bus107<-read_xlsx("/Users/fhh1482/Desktop/107bus2.xlsx")
-company_count<-table(bus107$客運公司)
+bus107<-read_xlsx("../data/107busNew.xlsx")
+company_count<-table(bus107$Company)
 print(company_count)
 company_name<-c("大都會客運","欣欣客運","首都客運","台北客運","東南客運","指南客運","大有巴士","大南汽車","光華巴士","中興巴士","三重客運","新店客運","淡水客運","聯營","無資料")
 
