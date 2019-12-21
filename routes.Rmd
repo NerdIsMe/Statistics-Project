@@ -24,3 +24,31 @@ geo <- as.data.frame(matrix(as.numeric(unlist(strsplit(unlist(as.list(strsplit(s
 colnames(geo) <- c("longitude", "latitude")
 print(geo)
 ```
+
+## parse multiple lines
+
+```{r}
+getRoute <- function(index) {
+  geo <- as.data.frame(matrix(as.numeric(unlist(strsplit(unlist(as.list(strsplit(substring(routes$Geometry[index],13,nchar(routes$Geometry[index])-1), ", ")[[1]])), " "))), ncol=2, byrow=TRUE))
+  colnames(geo) <- c("longitude", "latitude")
+  return(geo)
+}
+```
+
+```{r}
+lines <- lapply(1:nrow(routes), getRoute)
+names(lines) <- routes$RouteName$Zh_tw
+print(length(lines))
+```
+
+Get the line of the 13th route
+
+```{r}
+print(lines[[13]])
+```
+
+Get the line of 小12區
+
+```{r}
+print(lines[["小12區"]])
+```
