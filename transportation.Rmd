@@ -1,0 +1,82 @@
+---
+title: "其他交通工具的影響"
+output: html_notebook
+---
+
+```{r}
+library(readxl)
+bus <-  read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
+```
+
+```{r}
+years <- unique(bus$Year)
+column <- colnames(bus)
+bus_avg <- vector(mode="numeric", length = length(column))
+for(i in 1:length(years)) {
+  row <- vector(mode="numeric", length = length(column))
+  row[1] <- years[i]
+  row[2] <- sum(bus$Year == years[i])
+  tmp <- bus[bus$Year == years[i],]
+  for(j in 3:length(column)) {
+    row[j] <- mean(as.numeric(unlist(bus[bus$Year == years[i],column[j]])))
+  }
+  bus_avg <- rbind(bus_avg, row)
+}
+
+bus_avg <- data.frame(bus_avg[2:nrow(bus_avg),], row.names = NULL, stringsAsFactors=FALSE)
+colnames(bus_avg) <- c("Year", "Counts", column[3:length(column)])
+bus_avg <- data.frame(lapply(bus_avg,as.numeric))
+print(bus_avg)
+```
+
+read data: MRT/ubike/機動車輛(計程車、機車、自用客車與貨車)
+```{r}
+MRT <- read_excel("data/statistic_project_data.xlsx", sheet = "MRT")
+ubike <- read_excel("data/statistic_project_data.xlsx", sheet = "Ubike")
+vechicle <- read_excel("data/statistic_project_data.xlsx", sheet = "motor vehicle(Taipei)")
+#taxi <- vechicle$Taxi
+#motorcycle <- vechicle$Motorcycle
+#private <- vechicle$`Private vehicle`
+```
+Coefficient of correlation
+
+MRT
+```{r}
+cor(bus_avg[,3:ncol(bus_avg)], MRT[,2:5])
+#MRT : Station 站數 / MRT	車次 / Passenger人次 / Discount_1K 雙向轉乘優惠運量 (千人次)
+```
+
+ubike
+```{r}
+tmp <- bus_avg[(nrow(bus_avg)-9):nrow(bus_avg) ,3:ncol(bus_avg)] #year: 98-107
+#print(tmp)
+cor(tmp[,], ubike[,2])
+```
+
+Motor vehicle
+```{r}
+veh_cor <- cor(bus_avg[,3:ncol(bus_avg)], vechicle[2:4])
+print(veh_cor)
+```
+
+
+
+
+```{r}
+for(co in colnames(MRT)[2:ncol(MRT)]) {
+  plot(MRT[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
+  lines(MRT[, c("Year", co)])
+}
+```
+```{r}
+plot(ubike, main="Line Chart of Ubike")
+lines(ubike$Year, ubike$Ubike)
+```
+
+```{r}
+for(co in colnames(vechicle)[2:ncol(vechicle)]) {
+  plot(vechicle[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
+  lines(vechicle[, c("Year", co)])
+}
+```
+
