@@ -1,0 +1,98 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+Plot_Year <- function(year)
+{
+  library(readxl)
+  library(moments)
+  library(RColorBrewer)
+  options(scipen=999)# 不使用科學記號
+  
+  data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
+  #data
+  data_one_year = data[data[, "Year"] == year,]
+  out_mat = matrix(, ncol = 7)
+  colnames(out_mat) = c("公車路線", "行駛段次(段次)", "行駛里程(公里)", " 載客人次(人次)", " 每段次平均載客(人次)",  "客運收入(元)",  "每車公里營收(元)")
+  
+  graph_name = c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車 每車公里營收")
+  divide = c(10000, 10000, 10000, 1, 10000, 1)
+  x_labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
+  
+  cat("\n民國", year, "年: ")
+  for (i in 3:8)## plot each column
+  {
+    # Box Plot
+    data_col = as.numeric(unlist(data_one_year[, i], use.names = F))
+    #print(data_col)
+    boxplot(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2], sep = ""), xlab = x_labs[i - 2], horizontal = T, col = "lightblue")
+
+    out_values = boxplot.stats(data_col)$out
+    index = which(data_col %in% out_values)
+
+    # 將outliers 放入matrix
+    if (length(index) != 0)
+    {
+      for (j in 1:length(index))
+      {
+        mat_int = match(data_one_year$Name[index[j]], out_mat[, 1])
+        if(is.na(mat_int))
+        {
+          out_mat = rbind(out_mat,rep(-1, 7))
+          out_mat[length(out_mat[,1]), i-1] = data_col[index[j]]
+          out_mat[length(out_mat[,1]), "公車路線"] = data_one_year$Name[index[j]]
+        }
+        else
+        {
+          out_mat[mat_int,i - 1] = data_col[index[j]]
+        }
+      }
+      
+      # Histogram
+      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2], sep = ""), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"))
+      
+      # Skewness
+      s = skewness(data_col)
+      cat("\nSkewness of ", graph_name[i-2], " = ", s, sep = "")
+    }
+  }
+  
+  # Print outliers
+  cat("\nOutliers of year", year, "\n", sep = " ")
+  out_mat = out_mat[-1,]
+  print(out_mat)
+  
+  # Print 相關係數
+  r_mat = matrix(rep(0,36), ncol = 6)
+  row.names(r_mat) = colnames(out_mat)[-1]
+  colnames(r_mat) = colnames(out_mat)[-1]
+  for (i in c(1:6))
+  {
+    for (j in c(1:6))
+    {
+      if (i == j)
+        next
+      else if (r_mat[j, i] != 0)
+        r_mat[i, j] = r_mat[j, i]
+      else
+      {
+        r_mat[i, j] = cor(data_one_year[,2+i], data_one_year[,2+j])
+      }
+    }
+  }
+  print("相關係數：")
+  print(r_mat)
+}
+```
+
+
+```{r}
+years = c(103:107)
+for (i in years)
+Plot_Year(i)
+```
