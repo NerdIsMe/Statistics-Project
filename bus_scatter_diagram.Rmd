@@ -1,0 +1,58 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# Scatter Diagram
+```{r}
+Scatter_Diagram <- function(year)
+{
+  library(readxl)
+  library(moments)
+  library(RColorBrewer)
+  options(scipen=999)# 不使用科學記號
+  
+  data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
+  #data
+  data_one_year = list()
+  len = length(year)
+  for(i in 1:len)
+  {
+   data_one_year[[i]] = data[data[, "Year"] == year[i],]
+
+  }
+  
+  items <- c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車每車公里營收")
+  labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
+  for(i in 3:7)
+  {
+    
+    for(j in ((i+1):8))
+    {
+      for(k in 1:len)
+      {
+        data_x = as.numeric(unlist(data_one_year[[k]][, i], use.names = F))
+        data_y = as.numeric(unlist(data_one_year[[k]][, j], use.names = F))
+      
+        main = paste( year[k], "年 ", items[i-2], " - ", items[j-2], " 分布圖",sep = "")
+        r = cor(data_x, data_y)
+        sub = paste("相關係數：", r)
+        xlab = paste(items[i-2], "（", labs[i-2], "）", sep = "")
+        ylab = paste(items[j-2], "（", labs[j-2], "）", sep = "")
+        plot(data_x, data_y, main = main, pch = 16, col = "orange", xlab = xlab, ylab = ylab, cex = 0.6, sub =sub)
+        abline(lm(data_y~data_x), col = "red")
+      }
+
+    }
+  }
+}
+```
+
+
+```{r}
+Scatter_Diagram(100:107)
+```
