@@ -12,6 +12,7 @@ Plot_Year <- function(year)
   library(readxl)
   library(moments)
   library(RColorBrewer)
+  library(xlsx)
   options(scipen=999)# 不使用科學記號
   
   data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
@@ -67,6 +68,10 @@ Plot_Year <- function(year)
   out_mat = out_mat[-1,]
   print(out_mat)
   
+  # Save to Excel
+  tempt = data.frame(out_mat)
+  write.xlsx(tempt, file = "data\\bus_col_outliers.xlsx", append = T, sheetName = as.character(year), row.names = T)
+  
   # Print 相關係數
   r_mat = matrix(rep(0,36), ncol = 6)
   row.names(r_mat) = colnames(out_mat)[-1]
@@ -87,32 +92,6 @@ Plot_Year <- function(year)
   }
   print("相關係數：")
   print(r_mat)
-}
-```
-
-# Scatter Diagram
-```{r}
-Scatter_Diagram <- function(year)
-{
-  library(readxl)
-  library(moments)
-  library(RColorBrewer)
-  options(scipen=999)# 不使用科學記號
-  
-  data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
-  #data
-  data_one_year = data[data[, "Year"] == year,]
-  items <- c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車 每車公里營收")
-  
-  for(i in 3:7)
-  {
-    data_x = as.numeric(unlist(data_one_year[, i], use.names = F))
-    for(j in ((i+1):8))
-    {
-      data_y = as.numeric(unlist(data_one_year[, j], use.names = F))
-      plot(data_one_year[])
-    }
-  }
 }
 ```
 
