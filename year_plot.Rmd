@@ -18,10 +18,11 @@ Plot_Year <- function(year)
   data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
   #data
   data_one_year = data[ data[, "Year"] == year , ]
-  out_mat = matrix(, ncol = 7)
+  out_mat = matrix(ncol = 7)
   colnames(out_mat) = c("公車路線", "行駛段次(段次)", "行駛里程(公里)", " 載客人次(人次)", " 每段次平均載客(人次)",  "客運收入(元)",  "每車公里營收(元)")
   
-  graph_name = c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車 每車公里營收")
+  #graph_name = c("行駛段次", "行駛里程", "載客人次", "每段次平均載客", "客運收入", "每車公里營收")
+  graph_name = c("Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
   divide = c(10000, 10000, 10000, 1, 10000, 1)
   x_labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
   
@@ -32,7 +33,7 @@ Plot_Year <- function(year)
     data_col = as.numeric(unlist(data_one_year[, i], use.names = F))
     
     #print(data_col)
-    boxplot(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2], sep = ""), xlab = x_labs[i - 2], horizontal = T, col = "lightblue")
+    boxplot(data_col/divide[i-2], main = paste0( "民國" , year, "年", graph_name[i-2]), xlab = x_labs[i - 2], horizontal = T, col = "lightblue")
       
     out_values = boxplot.stats(data_col)$out
     index = which(data_col %in% out_values)
@@ -56,7 +57,7 @@ Plot_Year <- function(year)
       }
       
       # Histogram
-      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2], sep = ""), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"))
+      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2]), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"))
       
       # Skewness
       s = skewness(data_col)
@@ -95,6 +96,15 @@ Plot_Year <- function(year)
         r_mat[i, j] = r_mat[j, i]
       else
       {
+        
+        # 資料需要先轉換成不是list的形式才能丟給plot去做散布圖
+        X = as.numeric(unlist(data_one_year[, i+2], use.names = F))
+        Y = as.numeric(unlist(data_one_year[, j+2], use.names = F))
+        
+        # 散布圖,pch塗滿點,cex調整點的大小
+        plot(X,Y,xlab=graph_name[i],ylab=graph_name[j],main=paste("scatter diagram of",graph_name[i],"and",graph_name[j],"in",year),pch=19,col="blue",cex=0.5)
+        
+        # 相關係數
         r_mat[i, j] = cor(data_one_year[,2+i], data_one_year[,2+j])
       }
     }
