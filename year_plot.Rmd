@@ -5,6 +5,26 @@ output:
     df_print: paged
 ---
 
+```{r}
+Percentile_f <- function(x, p) {
+
+	size <- length(x)
+	l <- (size + 1) * p
+	x_sort <- sort(x, decreasing = FALSE)
+	l_floor <- floor(l)
+	l_ceiling <- ceiling(l)
+	l_dec <- l - l_floor
+	if (l_dec == 0) {
+		x_p <- x_sort[l]
+	} else {
+		x_p <- x_sort[l_floor] + (x_sort[l_ceiling] - x_sort[l_floor]) * l_dec
+	}
+	return(x_p)
+}
+#a = (Percentile_f(data_col, 0.5))
+```
+
+
 
 ```{r}
 Plot_Year <- function(year)
@@ -21,8 +41,8 @@ Plot_Year <- function(year)
   out_mat = matrix(ncol = 7)
   colnames(out_mat) = c("公車路線", "行駛段次(段次)", "行駛里程(公里)", " 載客人次(人次)", " 每段次平均載客(人次)",  "客運收入(元)",  "每車公里營收(元)")
   
-  #graph_name = c("行駛段次", "行駛里程", "載客人次", "每段次平均載客", "客運收入", "每車公里營收")
-  graph_name = c("Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
+  graph_name = c("行駛段次", "行駛里程", "載客人次", "每段次平均載客", "客運收入", "每車公里營收")
+  #graph_name = c("Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
   divide = c(10000, 10000, 10000, 1, 10000, 1)
   x_labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
   
@@ -31,9 +51,13 @@ Plot_Year <- function(year)
   {
     # Box Plot
     data_col = as.numeric(unlist(data_one_year[, i], use.names = F))
+    Q1 <- round(Percentile_f(data_col/divide[i-2], 0.25), digits = 3)
+    Q2 <- round(Percentile_f(data_col/divide[i-2], 0.5), digits = 3)
+    Q3 <- round(Percentile_f(data_col/divide[i-2], 0.75), digits = 3)
+
+    sub <- paste("Q1: ", Q1, ", Q2: ", Q2, ", Q3", Q3)
     
-    #print(data_col)
-    boxplot(data_col/divide[i-2], main = paste0( "民國" , year, "年", graph_name[i-2]), xlab = x_labs[i - 2], horizontal = T, col = "lightblue")
+    boxplot(data_col/divide[i-2], main = paste0( "民國" , year, "年", graph_name[i-2]), xlab = x_labs[i - 2], horizontal = T, col = "lightblue", sub = sub)
       
     out_values = boxplot.stats(data_col)$out
     index = which(data_col %in% out_values)
@@ -57,17 +81,25 @@ Plot_Year <- function(year)
       }
       
       # Histogram
-      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2]), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"))
+      sd = round(sd(data_col/divide[i-2]), digits = 3)
+      mean = round(mean (data_col/divide[i-2]), digits = 3)
+      s = round(skewness(data_col/divide[i-2]), digits = 3)
       
-      # Skewness
-      s = skewness(data_col)
-      cat("\nSkewness of ", graph_name[i-2], " = ", s, sep = "")
+      sub = paste("Standard Deviation: ", sd, ", Mean: ", mean, ", Skewness: ", s)
       
-      # Means
-      cat("\nMeans of ", graph_name[i-2], " = ", mean(data_col/divide[i-2]))
+      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2]), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"), sub = sub)
       
-      # SD
-      cat("\nStandard Deviation of", graph_name[i-2] , "=" , sd(data_col/divide[i-2]))
+
+      # # Skewness
+      # s = skewness(data_col)
+      # cat("\nSkewness of ", graph_name[i-2], " = ", s, sep = "")
+      # 
+      # # Means
+      # cat("\nMeans of ", graph_name[i-2], " = ", mean(data_col/divide[i-2]))
+      # 
+      # # SD
+      # cat("\nStandard Deviation of", graph_name[i-2] , "=" , sd(data_col/divide[i-2]))
+      
       
       
     }
@@ -102,7 +134,7 @@ Plot_Year <- function(year)
         Y = as.numeric(unlist(data_one_year[, j+2], use.names = F))
         
         # 散布圖,pch塗滿點,cex調整點的大小
-        plot(X,Y,xlab=graph_name[i],ylab=graph_name[j],main=paste("scatter diagram of",graph_name[i],"and",graph_name[j],"in",year),pch=19,col="blue",cex=0.5)
+        plot(X,Y,xlab=graph_name[i],ylab=graph_name[j],main=paste("民國", year, "年 ",graph_name[i]," 和 ",graph_name[j],"分布圖"),pch=19,col="blue",cex=0.5)
         
         # 相關係數
         r_mat[i, j] = cor(data_one_year[,2+i], data_one_year[,2+j])
@@ -120,3 +152,5 @@ years = c(103:107)
 for (i in years)
 Plot_Year(i)
 ```
+
+
