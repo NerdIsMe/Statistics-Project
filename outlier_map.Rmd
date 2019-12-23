@@ -1,0 +1,43 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+#Routes.json, bus_col_outliers檔案都在git上
+
+TaiwanMap <- get_map(center=c(lon = 121.5142, lat = 25.10903), zoom = 11, maptype = "roadmap")
+routes <- jsonlite::fromJSON(txt = "Routes.json")
+
+getRoute <- function(index) {
+  geo <- as.data.frame(matrix(as.numeric(unlist(strsplit(unlist(as.list(strsplit(substring(routes$Geometry[index],13,nchar(routes$Geometry[index])-1), ", ")[[1]])), " "))), ncol=2, byrow=TRUE))
+  colnames(geo) <- c("longitude", "latitude")
+  return(geo)
+}
+
+df <- df[0,]
+
+for(i in c(1:nrow(routes)))
+{
+  for(j in c(1:nrow(bus_col_outliers_107)))
+  {
+    if(routes$RouteName$Zh_tw[i] == bus_col_outliers_107$公車路線[j])       #year 107 first column as an example
+    {
+      if(bus_col_outliers_107$行駛段次.段次.[j] != "-1")
+      {
+        #print(routes$RouteName$Zh_tw[i])
+        temp <- getRoute(i)
+        temp$group = {i}
+        df <- bind_rows(df, temp)
+        break 
+      }
+    }
+  }
+}
+
+ggmap(TaiwanMap) +
+  #geom_point(data = df, aes(x = df$longitude, y = df$latitude), size = 0.1, colour = "red") +
+  geom_path(data = df, aes(x = df$longitude, y = df$latitude, color = "blue"), group = df$group)
+```
