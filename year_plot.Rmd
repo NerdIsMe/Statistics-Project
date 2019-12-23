@@ -17,7 +17,7 @@ Plot_Year <- function(year)
   
   data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
   #data
-  data_one_year = data[data[, "Year"] == year,]
+  data_one_year = data[ data[, "Year"] == year , ]
   out_mat = matrix(, ncol = 7)
   colnames(out_mat) = c("公車路線", "行駛段次(段次)", "行駛里程(公里)", " 載客人次(人次)", " 每段次平均載客(人次)",  "客運收入(元)",  "每車公里營收(元)")
   
@@ -26,13 +26,14 @@ Plot_Year <- function(year)
   x_labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
   
   cat("\n民國", year, "年: ")
-  for (i in 3:8)## plot each column
+  for (i in 3:8) # plot each column
   {
     # Box Plot
     data_col = as.numeric(unlist(data_one_year[, i], use.names = F))
+    
     #print(data_col)
     boxplot(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2], sep = ""), xlab = x_labs[i - 2], horizontal = T, col = "lightblue")
-
+      
     out_values = boxplot.stats(data_col)$out
     index = which(data_col %in% out_values)
 
@@ -60,6 +61,14 @@ Plot_Year <- function(year)
       # Skewness
       s = skewness(data_col)
       cat("\nSkewness of ", graph_name[i-2], " = ", s, sep = "")
+      
+      # Means
+      cat("\nMeans of ", graph_name[i-2], " = ", mean(data_col/divide[i-2]))
+      
+      # SD
+      cat("\nStandard Deviation of", graph_name[i-2] , "=" , sd(data_col/divide[i-2]))
+      
+      
     }
   }
   
@@ -69,8 +78,8 @@ Plot_Year <- function(year)
   print(out_mat)
   
   # Save to Excel
-  tempt = data.frame(out_mat)
-  write.xlsx(tempt, file = "data\\bus_col_outliers.xlsx", append = T, sheetName = as.character(year), row.names = T)
+  #tempt = data.frame(out_mat)
+  #write.xlsx(tempt, file = "data\\bus_col_outliers.xlsx", append = T, sheetName = as.character(year), row.names = T)
   
   # Print 相關係數
   r_mat = matrix(rep(0,36), ncol = 6)
