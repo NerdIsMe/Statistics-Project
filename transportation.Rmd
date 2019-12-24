@@ -33,29 +33,80 @@ read data: MRT/ubike/機動車輛(計程車、機車、自用客車與貨車)
 ```{r}
 MRT <- read_excel("data/statistic_project_data.xlsx", sheet = "MRT")
 ubike <- read_excel("data/statistic_project_data.xlsx", sheet = "Ubike")
-vechicle <- read_excel("data/statistic_project_data.xlsx", sheet = "motor vehicle(Taipei)")
+vehicle <- read_excel("data/statistic_project_data.xlsx", sheet = "motor vehicle(Taipei)")
 #taxi <- vechicle$Taxi
 #motorcycle <- vechicle$Motorcycle
 #private <- vechicle$`Private vehicle`
 ```
-Coefficient of correlation
 
-MRT
+#### MRT
+
+Scatter Diagram
+```{r}
+xlab <- c("MRT-Station","MRT-Times","MRT-Passenger","MRT-Discount")
+ylab <- c("Bus Times", "Bus Length", "Bus Customer", "Bus Average.Customer", "Bus Profit", "Bus Average.Profit")
+xunit <- c("(stations)","(times)","(people)","(1000 people)")
+yunit <- c("(10000 times)", "(10000 km)","(10000 people)", "(people)","(10000 dollars)", "(dollars)")
+
+for(i in 2:5){
+  for(j in 3:8){
+    x <- as.numeric(unlist(MRT[,i]))
+    y <- bus_avg[,j]
+       
+    plot(x, y,xlab = paste(xlab[i-1],xunit[i-1]), ylab = paste(ylab[j-2],yunit[j-2]), main = paste("Year 86~107", xlab[i-1], " - ", ylab[j-2], "Scatter Diagram"))
+    abline(lm(y~x))
+  }
+}
+```
+
+Coefficient of correlation
 ```{r}
 cor(bus_avg[,3:ncol(bus_avg)], MRT[,2:5])
 #MRT : Station 站數 / MRT	車次 / Passenger人次 / Discount_1K 雙向轉乘優惠運量 (千人次)
 ```
+#### Ubike
 
-ubike
+Scatter Diagram
+```{r}
+ylab <- c("Bus Times", "Bus Length", "Bus Customer", "Bus Average.Customer", "Bus Profit", "Bus Average.Profit")
+yunit <- c("(10000 times)", "(10000 km)","(10000 people)", "(people)","(10000 dollars)", "(dollars)")
+for(i in 3:8){
+  x <- bus_avg[(nrow(bus_avg)-9):nrow(bus_avg),i]
+  y <- as.numeric(unlist(ubike[,2]))
+  plot(x, y, xlab = "Ubike rental(times)",ylab = paste(ylab[i-2],yunit[i-2]), main = paste("Year 98~107 Ubike - ", ylab[i-2], "Scatter Diagram"))
+  abline(lm(y ~ x))
+}
+```
+Coefficient of correlation
 ```{r}
 tmp <- bus_avg[(nrow(bus_avg)-9):nrow(bus_avg) ,3:ncol(bus_avg)] #year: 98-107
 #print(tmp)
 cor(tmp[,], ubike[,2])
 ```
 
-Motor vehicle
+#### Motor vehicle
+
+Scatter Diagram
 ```{r}
-veh_cor <- cor(bus_avg[,3:ncol(bus_avg)], vechicle[2:4])
+xlab <- c("Taxi","Motorcycle","Private Vehicle")
+ylab <- c("Bus Times", "Bus Length", "Bus Customer", "Bus Average.Customer", "Bus Profit", "Bus Average.Profit")
+yunit <- c("(10000 times)", "(10000 km)","(10000 people)", "(people)","(10000 dollars)", "(dollars)")
+
+for(i in 2:4){
+  for(j in 3:8){
+    x <- as.numeric(unlist(vehicle[,i]))
+    y <- bus_avg[,j]
+       
+    plot(x, y,xlab = xlab[i-1], ylab = paste(ylab[j-2], yunit[j-2]), main = paste("Year 86~107", xlab[i-1], " - ", ylab[j-2], "Scatter Diagram"))
+    abline(lm(y ~ x))
+  }
+}
+
+```
+
+Coefficient of correlation
+```{r}
+veh_cor <- cor(bus_avg[,3:ncol(bus_avg)], vehicle[2:4])
 print(veh_cor)
 ```
 
@@ -74,9 +125,9 @@ lines(ubike$Year, ubike$Ubike)
 ```
 
 ```{r}
-for(co in colnames(vechicle)[2:ncol(vechicle)]) {
-  plot(vechicle[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
-  lines(vechicle[, c("Year", co)])
+for(co in colnames(vehicle)[2:ncol(vehicle)]) {
+  plot(vehicle[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
+  lines(vehicle[, c("Year", co)])
 }
 ```
 

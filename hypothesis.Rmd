@@ -1,0 +1,108 @@
+---
+title: "R Notebook"
+output: Hypothesis
+---
+
+Load the library
+
+```{r}
+library(readxl)
+```
+
+
+## Hypothesis
+
+p = proportion of low-floor bus
+
+- $H_0$: $p \geq 0.9$
+- $H_1$: $p < 0.9$
+
+```{r}
+p_low <- .9
+```
+
+
+## Population
+
+1.  中興巴士
+2.  光華巴士
+3.  新北客運
+4.  淡水客運
+5.  指南客運
+6.  首都客運
+7.  臺北客運
+8.  大都會客運
+9.  三重客運
+10. 大有巴士
+11. 新店客運
+12. 東南客運
+
+監理站無行政院國軍退除役官兵輔導委員會(大南汽車、欣欣客運)及未參加聯營之客運業者(皇家客運)
+
+```{r}
+com <- data.frame(name=c("中興巴士","光華巴士","新北客運","淡水客運","指南客運","首都客運","臺北客運","大都會客運","三重客運","大有巴士","新店客運","東南客運", "大南汽車", "欣欣客運"), count=c(365, 328, 83, 199, 538, 866, 981, 961, 977, 118, 304, 110, 246, 414))
+
+print(com)
+```
+
+## Sampling
+
+We use stratified sampling to keep each company's proportion of number of buses same as that in population.
+
+Sample size: 54
+
+```{r}
+sample_size <- round(com$count/sum(com$count) * 60)
+cat("Sample size:", sample_size)
+```
+
+
+Random select the bus by their ordering.
+
+```{r}
+set.seed(1001)
+getBus <- function(index) {
+  return(sample(1:com$count[index], sample_size[index]))
+}
+
+sam <- lapply(1:nrow(com), getBus)
+names(sam) <- com$name
+print(sam)
+```
+
+The result collected on our own
+
+```{r}
+low <- read_excel("data/low_floor.xlsx")
+print(low)
+```
+
+Check for np and n(p-1)
+
+```{r}
+cat("np =", p_low*54)
+cat("n(1-p) =", (1-p_low)*54)
+```
+
+Since both of np and n(1-p) are larger than 5, we can approximate the distribution of population with normal distribution.
+
+Compute the p-value
+
+```{r}
+p_sample <- sum(low$`Is Low Floor`)/nrow(low)
+sd_low <- sqrt(.9*(1-.9)/sum(com$count))
+print(sd_low)
+```
+
+```{r}
+.9+sqrt(.9*(1-.9)/60)*qnorm(.01, lower.tail = TRUE)
+```
+
+```{r}
+.8+sqrt(.8*(1-.8)/60)*qnorm(.01, lower.tail = TRUE)
+```
+
+```{r}
+.86+sqrt(.86*(1-.86)/60)*qnorm(.01/2, lower.tail = TRUE)
+```
+
