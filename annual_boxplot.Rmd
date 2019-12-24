@@ -1,0 +1,48 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+annual_boxplot <- function(years)
+{
+  len = length(years)# 有幾年
+  library(readxl)
+  
+  library(xlsx)
+  options(scipen=999)# 不使用科學記號
+  data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
+  #print(data)
+  
+  item = c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車每車公里營收")
+  
+  for (i in 3:8)
+  {
+    years_col = list()
+    
+    for(j in 1:len)
+    {
+      one_year = data[data[, "Year"] == years[j], ]
+    
+      years_col[j] = list(as.numeric(unlist(one_year[, i], use.names = F)))
+      #print(years_col[i])
+    }
+    
+    names(years_col) = as.character(years)
+    main = paste("民國", years[1],"-", years[len],"年  ", item[i-2], "  箱形圖")
+    boxplot(years_col, horizontal = T, main = main, col = "#FFCC66", pch = 1)
+    rm(years_col)
+  }
+}
+
+```
+
+
+```{r}
+year = c(86:107)
+
+annual_boxplot(year)
+```
+

@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+cv <- function(x)
+{
+  len = length(x)
+  return(100*( sd(x)*sqrt((len-1)/len)/mean(x)))
+}
+```
+
+
+```{r}
+Percentile_f <- function(x, p) {
+
+	size <- length(x)
+	l <- (size + 1) * p
+	x_sort <- sort(x, decreasing = FALSE)
+	l_floor <- floor(l)
+	l_ceiling <- ceiling(l)
+	l_dec <- l - l_floor
+	if (l_dec == 0) {
+		x_p <- x_sort[l]
+	} else {
+		x_p <- x_sort[l_floor] + (x_sort[l_ceiling] - x_sort[l_floor]) * l_dec
+	}
+	return(x_p)
+}
+```
+
+
+```{r}
+Descriptive_S <- function(x) 
+{
+  library(moments)
+  len = length(x)
+  t <- c(mean(x), median(x), sd(x)*sqrt((len-1)/len), var(x)*(len-1)/len, cv(x), max(x)-min(x), Percentile_f(x, 0.75) - Percentile_f(x, 0.25), skewness(x), kurtosis(x))
+  
+  return (t)
+}
+```
+
+
+```{r}
+library(readxl)
+library(xlsx)
+options(scipen=999)# 不使用科學記號
+data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 1)
+#print(data)
+data_107 = data[ data[, "Year"] == 107 , ]
+
+d_sta <- matrix(ncol = 9)
+
+for (i in 3:8)
+{
+  data_col = as.numeric(unlist(data_107[, i], use.names = F))
+  tempt <- Descriptive_S((data_col))
+  d_sta= rbind(d_sta, tempt)
+}
+
+d_sta = d_sta[-1,]
+row.names(d_sta) = c("行駛段次", "行駛里程", "載客人次", "每段次平均載客", "客運收入", "每車公里營收")
+colnames(d_sta) = c("平均值","中位數","標準差","變異數","CV","Range","IQR","Skewness", "Kurtosis")
+
+write.xlsx(d_sta, file = "data/107_descriptive_stats.xlsx", append = T, sheetName = "沒平準", row.names = T)
+
+```
