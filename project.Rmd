@@ -11,7 +11,7 @@ library(readxl)
 
 
 ```{r}
-bus <- read_excel("data/bus_efficiency_revised.xlsx")
+bus <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
 print(bus)
 ```
 
@@ -25,7 +25,7 @@ for(i in 1:length(years)) {
   row[2] <- sum(bus$Year == years[i])
   tmp <- bus[bus$Year == years[i],]
   for(j in 3:length(column)) {
-    row[j] <- mean(as.numeric(unlist(bus[bus$Year == years[i],column[j]])))
+    row[j] <- sd(as.numeric(unlist(bus[bus$Year == years[i],column[j]])))
   }
   bus_avg <- rbind(bus_avg, row)
 }
@@ -41,6 +41,7 @@ for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
   plot(bus_avg[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
   lines(bus_avg[, c("Year", co)])
   abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "red")
+  abline(v = 103, lty =2)
 }
 ```
 

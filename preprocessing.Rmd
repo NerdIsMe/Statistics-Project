@@ -35,7 +35,7 @@ print(be)
 ```
 
 ```{r}
-be <- be[complete.cases(be),]
+be <- be[complete.cases(be) & be$...2 != "39路",]
 yearcnt <- table(as.numeric(be$...1))
 print(yearcnt)
 ```
@@ -51,6 +51,9 @@ colnames(be) <- c("Year", "Name", "Times", "Length", "Customer", "Average.Custom
 print(head(be))
 ```
 
+```{r}
+write_xlsx(be, path = "data/bus_efficiency_revised.xlsx")
+```
 
 
 
