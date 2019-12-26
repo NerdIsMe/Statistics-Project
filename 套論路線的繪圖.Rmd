@@ -1,0 +1,53 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(readxl)
+library(dplyr)
+data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 1)
+data_107 <- filter(data, Year == 107)
+
+items <- c("公車行駛段次", "公車行駛里程", "公車載客人次", "公車每段平均載客", "客運收入", "公車每車公里營收")
+labs = c("次數（萬次）", "里程（萬公里）","人次（萬人）", "人次","元（萬元）", "元")
+divide = c(10000, 10000, 10000, 1, 10000, 1)
+
+
+average <- vector()
+for(i in 1:6)
+{
+  col = as.numeric(unlist(data_107[,i+2],use.names = F))/divide[i]
+  average<- c(average, mean(col))
+}
+
+# 幹線
+sheet <- read_excel("data/30routes&col.xlsx", sheet = 1)
+for (i in 1:6)
+{
+  col = as.numeric(unlist(sheet[,i+2],use.names = F))/divide[i]
+  barplot(col, names.arg = sheet$Name, las = 2, cex.names = 0.75, main = paste("幹線 ", items[i]), ylab = labs[i])
+  abline(h = average[i])
+}
+
+# 顏色公車
+sheet <- read_excel("data/30routes&col.xlsx", sheet = 2)
+for (i in 1:6)
+{
+  col = as.numeric(unlist(sheet[,i+2],use.names = F))/divide[i]
+  barplot(col, names.arg = sheet$Name, las = 2, cex.names = 0.75, main = paste("顏色公車 ",items[i]), ylab = labs[i], col = c(rep("red2",20), rep("brown4", 15),rep("green3",4), rep("blue",23)))
+  abline(h = average[i])
+}
+
+#top 30th
+sheet <- read_excel("data/30routes&col.xlsx", sheet = 3)
+for (i in 1:6)
+{
+  col = as.numeric(unlist(sheet[,i+2],use.names = F))/divide[i]
+  barplot(col, names.arg = sheet$Name, las = 2, cex.names = 0.75, main = paste("TOP30th ", items[i]), ylab = labs[i])
+  abline(h = average[i])
+}
+```

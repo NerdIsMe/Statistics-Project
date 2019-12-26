@@ -1,0 +1,36 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readxl)
+library(dplyr)
+library(stringr)
+library(xlsx)
+data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 1)
+data_107 <- filter(data, Year == 107)
+
+## 幹線
+special <- filter(data_107,str_detect(Name, "幹線$"))
+
+## 顏色
+color <- filter(data_107, str_detect(Name,"綠|紅|藍|棕"))
+
+## 前30 without outliers
+out_num <- length(boxplot.stats(data_107$Profit)$out)
+data_107 <- arrange(data_107, Profit)
+data_len <- length(data_107$Year)
+top30th <- data_107[(data_len-29-out_num): (data_len - out_num),]
+boxplot.stats(data_107$Profit)$out
+
+special = data.frame(special)
+write.xlsx(special, file = "data\\30routes&col.xlsx", row.names = F, append = T, sheetName = "幹線")
+
+color = data.frame(color)
+write.xlsx(color, file = "data\\30routes&col.xlsx", row.names = F, append = T, sheetName = "紅藍綠棕公車")
+
+top30th <- data.frame(top30th)
+write.xlsx(top30th, file = "data\\30routes&col.xlsx", row.names = F, append = T, sheetName = "收入前30名( without outliers)")
+```
+
