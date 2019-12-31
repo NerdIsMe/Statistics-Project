@@ -11,7 +11,7 @@ annual_boxplot <- function(years)
   len = length(years)# 有幾年
   library(readxl)
   
-  library(xlsx)
+  # library(xlsx)
   options(scipen=999)# 不使用科學記號
   data <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
   #print(data)
@@ -32,7 +32,7 @@ annual_boxplot <- function(years)
     
     names(years_col) = as.character(years)
     main = paste("民國", years[1],"-", years[len],"年  ", item[i-2], "  箱形圖")
-    boxplot(years_col, horizontal = T, main = main, col = "#FFCC66", pch = 1)
+    boxplot(years_col, horizontal = F, main = main, pch = 1)
     rm(years_col)
   }
 }

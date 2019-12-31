@@ -106,3 +106,16 @@ print(sd_low)
 .86+sqrt(.86*(1-.86)/60)*qnorm(.01/2, lower.tail = TRUE)
 ```
 
+
+```{r}
+x_11 <- seq(.6, 1, .0001)
+f_11 <- dnorm(x_11, mean=.9, sd=sqrt(.9*(1-.9)/60))
+plot(x_11, f_11, xlab="Rejection Region", ylab="Density", main="Distribution", type="l", lwd=2)
+abline(v = .9 + qnorm(.01, lower.tail = TRUE)*sqrt(.9*(1-.9)/60), lty = 2)
+abline(v = 40/60, col = "red")
+```
+
+```{r}
+1-pnorm(.9+sqrt(.9*(1-.9)/60)*qnorm(.01, lower.tail = TRUE), mean = 40/60, sd = sqrt(.9*(1-.9)/60), lower.tail = FALSE)
+```
+

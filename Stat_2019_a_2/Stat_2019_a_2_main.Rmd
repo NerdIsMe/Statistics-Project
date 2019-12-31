@@ -1,0 +1,129 @@
+---
+title: "Statistic 2019 a Final Project (Group 2)"
+output: html_notebook
+---
+
+# Setting up
+
+Close the warning
+
+```{r}
+options(warn=-1)
+```
+
+
+Load the library.
+
+```{r}
+library(readxl)    # read_excel
+library(moments)   # skewness, kurtosis
+```
+
+Set the `modal` function to compute modal class
+
+```{r}
+Mode <- function(x) {
+  t <- table(x)
+  return(names(t)[t==max(t)])
+}
+```
+
+Set the `Range` function to compute range
+
+```{r}
+Range <- function(x) {
+  return(max(x)-min(x))
+}
+```
+
+Set the `pvar` function to compute variance of population
+
+```{r}
+pvar <- function(x) {
+  n <- length(x)
+  return(var(x) * (n-1) / n)
+}
+```
+
+Set the `psd` function to compute the standard deviation of population
+
+```{r}
+psd <- function(x) {
+  return(sqrt(pvar(x)))
+}
+```
+
+Set the `pcv` function to compute coefficient of variation of population
+
+```{r}
+pcv <- function(x) {
+  return(psd(x)/mean(x))
+}
+```
+
+Set the `pDescriptive_S` to compute the descriptive statistic of population
+
+```{r}
+pDescriptive_S <- function(x) {
+   library(moments)
+   DS_V <- vector("numeric", length = 13)
+   DS_V[1] <- mean(x)
+   DS_V[2] <- median(x)
+   DS_V[3] <- psd(x)
+   DS_V[4] <- pvar(x)
+   DS_V[5] <- skewness(x)
+   DS_V[6] <- kurtosis(x)
+   DS_V[8] <- min(x)
+   DS_V[9] <- max(x)
+   DS_V[10] <- sum(x)
+   DS_V[11] <- length(x)
+   DS_V[7] <- max(x) - min(x)
+   DS_V[12] <- psd(x) / sqrt(length(x))
+   DS_V[13] <- pcv(x)
+   names(DS_V) <- c("mean", "median", "stdev", "variance", "skewness", "kurtosis", "range", "min", "max", "sum", "size", "std err", "coef of variation")
+   return(DS_V)
+}
+```
+
+# Bus Efficiency
+
+Read the excel file.
+
+```{r}
+bus_efficiency <- read_excel("Stat_2019_a_2_bus-efficiency.xlsx", na=c("-","..."))
+print(head(bus_efficiency))
+```
+
+Fill the recording year to each row, reassign the column names and remove the bus line that was not recorded.
+
+```{r}
+years <- bus_efficiency$...1[!is.na(bus_efficiency$...1)]
+cnt <- 1
+for (y in years) {
+  y <- substr(y, 1, nchar(y)-1)
+  bus_efficiency$...1[cnt] <- y
+  cnt = cnt + 1
+  while(cnt <= length(bus_efficiency$...1) && is.na(bus_efficiency$...1[cnt])) {
+    bus_efficiency$...1[cnt] <- y
+    cnt = cnt + 1
+  }
+}
+colnames(bus_efficiency) <- c("Year", "Name", "Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
+bus_efficiency <- bus_efficiency[complete.cases(bus_efficiency),]
+print(head(bus_efficiency))
+```
+
+Apply the descriptive statistic to the bus efficiency in 2018.
+
+```{r}
+year <- 107
+ds <- data.frame()
+for (i in colnames(bus_efficiency)[3:ncol(bus_efficiency)]) {
+  ds <- rbind(ds, pDescriptive_S(bus_efficiency[[i]][bus_efficiency$Year == year]))
+}
+colnames(ds) <- c("mean", "median", "stdev", "variance", "skewness", "kurtosis", "range", "min", "max", "sum", "size", "std err", "coef of variation")
+rownames(ds) <- colnames(bus_efficiency)[3:ncol(bus_efficiency)]
+ds
+```
+
+

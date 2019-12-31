@@ -1,0 +1,78 @@
+---
+title: "Main Routes"
+output: html_notebook
+---
+
+```{r}
+library(readxl)
+```
+
+```{r}
+bus <- read_excel("data/bus_efficiency_withna.xlsx")
+print(head(bus))
+```
+
+```{r}
+bus[grepl("幹線", bus$Name),]
+```
+
+```{r}
+avg <- function(x) {
+  years <- unique(x$Year)
+  column <- colnames(x)
+  x_avg <- vector(mode="numeric", length = length(column))
+  for(i in 1:length(years)) {
+    row <- vector(mode="numeric", length = length(column))
+    row[1] <- years[i]
+    row[2] <- sum(x$Year == years[i] & x$Times != 0)
+    tmp <- bus[x$Year == years[i],]
+    for(j in 3:length(column)) {
+      row[j] <- mean(as.numeric(unlist(bus[x$Year == years[i] & x[,column[j]] != 0 ,column[j]])))
+    }
+    x_avg <- rbind(x_avg, row)
+  }
+  
+  x_avg <- data.frame(x_avg[2:nrow(x_avg),], row.names = NULL, stringsAsFactors=FALSE)
+  colnames(x_avg) <- c("Year", "Counts", column[3:length(column)])
+  x_avg <- data.frame(lapply(x_avg,as.numeric))
+  return(x_avg)
+}
+```
+
+```{r}
+bus_avg <- avg(bus)
+main_avg <- avg(bus[grepl("幹線", bus$Name),])
+print(head(main_avg))
+```
+
+```{r}
+for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
+  plot(bus_avg[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "), col="grey")
+  lines(bus_avg[, c("Year", co)], col="grey")
+  abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "grey")
+  
+  points(main_avg[, c("Year", co)])
+  lines(main_avg[, c("Year", co)])
+  abline(lm(main_avg[,co] ~ main_avg$Year), col= "red")
+}
+```
+
+```{r}
+for(co in colnames(bus)[3:ncol(bus)]) {
+  plot(cbind(as.numeric(unlist(bus[bus$Name=="棕9", "Year"])), bus[bus$Name=="棕9", co]), main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "), col="grey", xlim=range(86, 107), ylim=range(bus[bus$Name=="棕9" | bus$Name=="南京幹線", co]))
+  lines(cbind(as.numeric(unlist(bus[bus$Name=="棕9", "Year"])), bus[bus$Name=="棕9", co]), col="grey")
+  
+  points(cbind(as.numeric(unlist(bus[bus$Name=="南京幹線", "Year"])), bus[bus$Name=="南京幹線", co]))
+  lines(cbind(as.numeric(unlist(bus[bus$Name=="南京幹線", "Year"])), bus[bus$Name=="南京幹線", co]))
+}
+```
+
+
+```{r}
+as.numeric(unlist(bus[bus$Name=="236路",1]))
+```
+
+```{r}
+colnames(bus[bus$Name=="236路",])[3:ncol(bus[bus$Name=="236路",])]
+```
+

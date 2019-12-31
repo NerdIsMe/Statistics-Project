@@ -35,8 +35,10 @@ print(be)
 ```
 
 ```{r}
-be <- be[complete.cases(be),]
-yearcnt <- table(as.numeric(be$...1))
+be_full <- be[complete.cases(be),]
+be_na <- be
+be_na[is.na(be_na)] <- 0
+yearcnt <- table(as.numeric(be_full$...1))
 print(yearcnt)
 ```
 
@@ -47,10 +49,17 @@ lines(cbind(names(yearcnt), yearcnt))
 
 ```{r}
 # "...1", "...2", "行駛段次(段次)", "行駛里程(車公里)", "載客人次(人次)", "每段次平均載客(人次)", "客運收入(元)", "每車公里營收(元)"
-colnames(be) <- c("Year", "Name", "Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
-print(head(be))
+newcol <- c("Year", "Name", "Times", "Length", "Customer", "Average.Customer", "Profit", "Average.Profit")
+colnames(be_full) <- newcol
+colnames(be_na) <- newcol
+print(head(be_full))
+print(head(be_na))
 ```
 
+```{r}
+write_xlsx(be_full, "data/bus_efficiency_revised.xlsx")
+write_xlsx(be_na, "data/bus_efficiency_withna.xlsx")
+```
 
 
 
