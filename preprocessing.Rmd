@@ -36,11 +36,14 @@ print(be)
 
 ```{r}
 <<<<<<< HEAD
+<<<<<<< HEAD
 be_full <- be[complete.cases(be),]
 be_na <- be
 be_na[is.na(be_na)] <- 0
 yearcnt <- table(as.numeric(be_full$...1))
 =======
+=======
+>>>>>>> 002a9a3240434fe05dd902bfbc675625113eb59f
 be <- be[complete.cases(be) & be$...2 != "39路",]
 yearcnt <- table(as.numeric(be$...1))
 >>>>>>> 002a9a3240434fe05dd902bfbc675625113eb59f
@@ -63,8 +66,12 @@ print(head(be_na))
 
 ```{r}
 <<<<<<< HEAD
+<<<<<<< HEAD
 write_xlsx(be_full, "data/bus_efficiency_revised.xlsx")
 write_xlsx(be_na, "data/bus_efficiency_withna.xlsx")
+=======
+write_xlsx(be, path = "data/bus_efficiency_revised.xlsx")
+>>>>>>> 002a9a3240434fe05dd902bfbc675625113eb59f
 =======
 write_xlsx(be, path = "data/bus_efficiency_revised.xlsx")
 >>>>>>> 002a9a3240434fe05dd902bfbc675625113eb59f
