@@ -8,7 +8,8 @@ library(readxl)
 ```
 
 ```{r}
-bus <- read_excel("data/bus_efficiency_withna.xlsx")
+bus <- read_excel("data/bus_efficiency_revised.xlsx")
+bus_na <- read_excel("data/bus_efficiency_withna.xlsx")
 print(head(bus))
 ```
 
@@ -59,11 +60,11 @@ for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
 
 ```{r}
 for(co in colnames(bus)[3:ncol(bus)]) {
-  plot(cbind(as.numeric(unlist(bus[bus$Name=="棕9", "Year"])), bus[bus$Name=="棕9", co]), main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "), col="grey", xlim=range(86, 107), ylim=range(bus[bus$Name=="棕9" | bus$Name=="南京幹線", co]))
-  lines(cbind(as.numeric(unlist(bus[bus$Name=="棕9", "Year"])), bus[bus$Name=="棕9", co]), col="grey")
+  plot(cbind(as.numeric(unlist(bus[bus$Name=="518路", "Year"])), bus[bus$Name=="518路", co]), main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "), col="grey", xlim=range(86, 107), ylim=range(bus[bus$Name=="518路" | bus$Name=="民生幹線", co]))
+  lines(cbind(as.numeric(unlist(bus[bus$Name=="518路", "Year"])), bus[bus$Name=="518路", co]), col="grey")
   
-  points(cbind(as.numeric(unlist(bus[bus$Name=="南京幹線", "Year"])), bus[bus$Name=="南京幹線", co]))
-  lines(cbind(as.numeric(unlist(bus[bus$Name=="南京幹線", "Year"])), bus[bus$Name=="南京幹線", co]))
+  points(cbind(as.numeric(unlist(bus[bus$Name=="民生幹線", "Year"])), bus[bus$Name=="民生幹線", co]))
+  lines(cbind(as.numeric(unlist(bus[bus$Name=="民生幹線", "Year"])), bus[bus$Name=="民生幹線", co]))
 }
 ```
 
@@ -75,4 +76,123 @@ as.numeric(unlist(bus[bus$Name=="236路",1]))
 ```{r}
 colnames(bus[bus$Name=="236路",])[3:ncol(bus[bus$Name=="236路",])]
 ```
+
+```{r}
+main <- c("民生幹線", "內湖幹線", "承德幹線", "松江新生幹線", "民權幹線", "南京幹線", "忠孝(新)幹線", "仁愛幹線", "信義(新)幹線", "和平幹線", "重慶幹線", "中山幹線", "松江幹線", "基隆路幹線", "復興幹線", "敦化幹線", "羅斯福幹線")
+bus_main <- bus[bus$Year=="107" & bus$Name %in% main,]
+```
+
+
+```{r}
+bus_107 <- bus[bus$Year=="107",]
+for(co in colnames(bus_107[,3:ncol(bus_107)])) {
+  print(paste(co,": more than mean / mean without outlier"))
+  print(sum(bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107))
+  outliers <- boxplot(unlist(bus_107[,co]), plot = FALSE)$out
+  if(length(outliers) > 0)
+    print(sum(bus_107[,co] > mean(unlist(bus_107[-which(unlist(bus_107[,co]) %in% outliers),co])))/nrow(bus_107))
+  else
+    print(sum(bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107))
+}
+```
+
+```{r}
+for(co in colnames(bus_107[,3:ncol(bus_107)])) {
+  print(paste(co,": more than mean / mean without outlier"))
+  print(sum(bus_main[,co] > mean(unlist(bus_107[,co])))/nrow(bus_main))
+  outliers <- boxplot(unlist(bus_107[,co]), plot = FALSE)$out
+  if(length(outliers) > 0)
+    print(sum(bus_main[,co] > mean(unlist(bus_107[-which(unlist(bus_107[,co]) %in% outliers),co])))/nrow(bus_main))
+  else
+    print(sum(bus_main[,co] > mean(unlist(bus_107[,co])))/nrow(bus_main))
+}
+```
+
+
+```{r}
+print(sum(bus_107$Name %in% main & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print(sum(bus_107$Name %in% main & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print(sum(!(bus_107$Name %in% main) & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print(sum(!(bus_107$Name %in% main) & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+```
+
+```{r}
+boxplot(bus_main$Times)
+```
+
+```{r}
+bus_main[bus_main$Profit %in% boxplot(bus_main$Profit, plot=FALSE)$out,]$Name
+```
+
+```{r}
+for(co in colnames(bus_na)[3:ncol(bus_na)]) {
+  plot(cbind(as.numeric(unlist(bus_na[bus_na$Name=="285路", "Year"])), bus_na[bus_na$Name=="285路", co]), main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "), col="grey", xlim=range(86, 107), ylim=range(bus_na[bus_na$Name %in% c("285路", "688路","敦化幹線"), co]))
+  lines(cbind(as.numeric(unlist(bus_na[bus_na$Name=="285路", "Year"])), bus_na[bus_na$Name=="285路", co]), col="grey")
+  
+  points(cbind(as.numeric(unlist(bus_na[bus_na$Name=="688路", "Year"])), bus_na[bus_na$Name=="688路", co]), col="blue")
+  lines(cbind(as.numeric(unlist(bus_na[bus_na$Name=="688路", "Year"])), bus_na[bus_na$Name=="688路", co]), col="blue")
+  
+  points(cbind(as.numeric(unlist(bus_na[bus_na$Name=="敦化幹線", "Year"])), bus_na[bus_na$Name=="敦化幹線", co]))
+  lines(cbind(as.numeric(unlist(bus_na[bus_na$Name=="敦化幹線", "Year"])), bus_na[bus_na$Name=="敦化幹線", co]))
+}
+```
+
+```{r}
+s <- sqrt(var(bus_107$Times)*(nrow(bus_107)-1)/nrow(bus_107))
+(bus_107$Times[bus_107$Name=="羅斯福幹線"]-mean(bus_107$Times))/s
+bus_107$Times[bus_107$Name=="羅斯福幹線"]
+```
+
+```{r}
+hist(bus_107$Times)
+abline(v=bus_107$Times[bus_107$Name %in% main], col="red")
+```
+
+```{r}
+h <- hist(bus_107$Times, plot = FALSE)
+h$counts[1]/sum(h$counts)
+```
+
+```{r}
+color <- c("紅", "棕", "綠", "橘", "藍")
+print("行駛段次")
+print("總體大於平均")
+print(sum(bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("總體小於等於平均")
+print(sum(bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print("幹線 + 大於平均")
+print(sum(bus_107$Name %in% main & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("幹線 + 小於等於平均")
+print(sum(bus_107$Name %in% main & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print("顏色 + 大於平均")
+print(sum(grepl(paste(color, collapse="|"), bus_107$Name) & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("顏色 + 小於等於平均")
+print(sum(grepl(paste(color, collapse="|"), bus_107$Name) & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print("市民 + 大於平均")
+print(sum(grepl("市民小巴", bus_107$Name) & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("市民 + 小於等於平均")
+print(sum(grepl("市民小巴", bus_107$Name) & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print("小 + 大於平均")
+print(sum(grepl("小", bus_107$Name) & !grepl("市民小巴", bus_107$Name) & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("小 + 小於等於平均")
+print(sum(grepl("小", bus_107$Name) & !grepl("市民小巴", bus_107$Name) & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+print("其他 + 大於平均")
+print(sum(!(bus_107$Name %in% main) & !grepl(paste(color, collapse="|"), bus_107$Name) & !grepl("小", bus_107$Name) & bus_107$Times > mean(bus_107$Times))/nrow(bus_107))
+print("其他 + 小於等於平均")
+print(sum(!(bus_107$Name %in% main) & !grepl(paste(color, collapse="|"), bus_107$Name) & !grepl("小", bus_107$Name) & bus_107$Times <= mean(bus_107$Times))/nrow(bus_107))
+```
+
+```{r}
+color <- c("紅", "棕", "綠", "橘", "藍")
+for(co in colnames(bus_107[,3:ncol(bus_107)])) {
+  
+  df <- data.frame(main = c(sum(bus_107$Name %in% main & bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(bus_107$Name %in% main & bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)), color = c(sum(grepl(paste(color, collapse="|"), bus_107$Name) & bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(grepl(paste(color, collapse="|"), bus_107$Name) & bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)), resident = c(sum(grepl("市民小巴", bus_107$Name) & bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(grepl("市民小巴", bus_107$Name) & bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)), small = c(sum(grepl("小", bus_107$Name) & !grepl("市民小巴", bus_107$Name) & bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(grepl("小", bus_107$Name) & !grepl("市民小巴", bus_107$Name) & bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)), others = c(sum(!(bus_107$Name %in% main) & !grepl(paste(color, collapse="|"), bus_107$Name) & !grepl("小", bus_107$Name) & bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(!(bus_107$Name %in% main) & !grepl(paste(color, collapse="|"), bus_107$Name) & !grepl("小", bus_107$Name) & bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)), total = c(sum(bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107), sum(bus_107[,co]<= mean(unlist(bus_107[,co])))/nrow(bus_107)))
+  
+  df <- rbind(df, colSums(df))
+  row.names(df) <- c(paste(co, "more than mean"), paste(co, "less or equal to mean"), "total")
+  
+  print(df)
+}
+```
+
 

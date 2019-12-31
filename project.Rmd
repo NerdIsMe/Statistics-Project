@@ -137,6 +137,7 @@ for(co in colnames(bus_107[,3:ncol(bus_107)])) {
 ```
 
 ```{r}
-
+outliers <- boxplot(bus_107[,"Times"], plot = FALSE)$out
+boxplot(bus_107$Times[-which(bus_107$Times %in% outliers)])
 ```
 
