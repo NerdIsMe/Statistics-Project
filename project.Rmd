@@ -13,7 +13,7 @@ library(readxl)
 
 
 ```{r}
-bus <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
+bus <- read_excel("data/bus_efficiency_revised.xlsx")
 print(bus)
 ```
 # SD
@@ -108,5 +108,35 @@ for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
   abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "red")
   #abline(v = 103, lty =2)
 }
+```
+
+```{r}
+bus_107 <- bus[bus$Year=="107",]
+mean(bus_107$Times)
+```
+
+```{r}
+sum(bus_107$Times > mean(bus_107$Times))/nrow(bus_107)
+```
+
+```{r}
+outliers <- boxplot(bus_107[,"Times"], plot = FALSE)$out
+sum(bus_107$Times > mean(bus_107$Times[-which(bus_107$Times %in% outliers)]))/nrow(bus_107)
+```
+
+```{r}
+for(co in colnames(bus_107[,3:ncol(bus_107)])) {
+  print(paste(co,": more than mean / mean without outlier"))
+  print(sum(bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107))
+  outliers <- boxplot(unlist(bus_107[,co]), plot = FALSE)$out
+  if(length(outliers) > 0)
+    print(sum(bus_107[,co] > mean(unlist(bus_107[-which(unlist(bus_107[,co]) %in% outliers),co])))/nrow(bus_107))
+  else
+    print(sum(bus_107[,co] > mean(unlist(bus_107[,co])))/nrow(bus_107))
+}
+```
+
+```{r}
+
 ```
 
