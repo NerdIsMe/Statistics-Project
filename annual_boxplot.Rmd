@@ -32,7 +32,12 @@ annual_boxplot <- function(years)
     
     names(years_col) = as.character(years)
     main = paste("民國", years[1],"-", years[len],"年  ", item[i-2], "  箱形圖")
+<<<<<<< HEAD
     boxplot(years_col, horizontal = F, main = main, pch = 1)
+=======
+    boxplot(years_col, horizontal = T, main = main, col = "#FFCC66", pch = 1)
+    #boxplot(y ~ x , id.method = "y")
+>>>>>>> 002a9a3240434fe05dd902bfbc675625113eb59f
     rm(years_col)
   }
 }
@@ -42,6 +47,7 @@ annual_boxplot <- function(years)
 
 ```{r}
 year = c(86:107)
+
 
 annual_boxplot(year)
 ```

@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: 108-1 Statistic Project
+output:
+  html_document:
+    df_print: paged
 ---
 
 Load the library
@@ -11,10 +13,50 @@ library(readxl)
 
 
 ```{r}
-bus <- read_excel("data/bus_efficiency_revised.xlsx")
+bus <- read_excel("data/bus_efficiency_revised.xlsx", sheet = 2)
 print(bus)
 ```
+# SD
+```{r}
+years <- unique(bus$Year)
+column <- colnames(bus)
+bus_avg <- vector(mode="numeric", length = length(column))
+for(i in 1:length(years)) {
+  row <- vector(mode="numeric", length = length(column))
+  row[1] <- years[i]
+  row[2] <- sum(bus$Year == years[i])
+  tmp <- bus[bus$Year == years[i],]
+  for(j in 3:length(column)) {
+    tempt = as.numeric(unlist(bus[bus$Year == years[i],column[j]]))
+    len = length(tempt)
+    row[j] <- sd(tempt)*(len-1)/len
+  }
+  bus_avg <- rbind(bus_avg, row)
+}
 
+bus_avg <- data.frame(bus_avg[2:nrow(bus_avg),], row.names = NULL, stringsAsFactors=FALSE)
+colnames(bus_avg) <- c("Year", "Counts", column[3:length(column)])
+bus_avg <- data.frame(lapply(bus_avg,as.numeric))
+print(bus_avg)
+```
+
+```{r}
+for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
+  plot(bus_avg[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
+  lines(bus_avg[, c("Year", co)])
+  abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "red")
+  #abline(v = 103, lty =2)
+}
+```
+
+```{r}
+print(cor(bus_avg))
+```
+
+```{r}
+print(cor(bus[,3:ncol(bus)]))
+```
+# Mean
 ```{r}
 years <- unique(bus$Year)
 column <- colnames(bus)
@@ -33,23 +75,38 @@ for(i in 1:length(years)) {
 bus_avg <- data.frame(bus_avg[2:nrow(bus_avg),], row.names = NULL, stringsAsFactors=FALSE)
 colnames(bus_avg) <- c("Year", "Counts", column[3:length(column)])
 bus_avg <- data.frame(lapply(bus_avg,as.numeric))
-print(bus_avg)
-```
-
-```{r}
 for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
   plot(bus_avg[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
   lines(bus_avg[, c("Year", co)])
   abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "red")
+  #abline(v = 103, lty =2)
 }
 ```
 
+# Sum 
 ```{r}
-print(cor(bus_avg))
-```
+years <- unique(bus$Year)
+column <- colnames(bus)
+bus_avg <- vector(mode="numeric", length = length(column))
+for(i in 1:length(years)) {
+  row <- vector(mode="numeric", length = length(column))
+  row[1] <- years[i]
+  row[2] <- sum(bus$Year == years[i])
+  tmp <- bus[bus$Year == years[i],]
+  for(j in 3:length(column)) {
+    row[j] <- sum(as.numeric(unlist(bus[bus$Year == years[i],column[j]])))
+  }
+  bus_avg <- rbind(bus_avg, row)
+}
 
-```{r}
-print(cor(bus[,3:ncol(bus)]))
+bus_avg <- data.frame(bus_avg[2:nrow(bus_avg),], row.names = NULL, stringsAsFactors=FALSE)
+colnames(bus_avg) <- c("Year", "Counts", column[3:length(column)])
+bus_avg <- data.frame(lapply(bus_avg,as.numeric))
+for(co in colnames(bus_avg)[2:ncol(bus_avg)]) {
+  plot(bus_avg[, c("Year", co)], main=gsub("\\.", " ", paste("Line Chart of ", co), ".", " "))
+  lines(bus_avg[, c("Year", co)])
+  abline(lm(bus_avg[,co] ~ bus_avg$Year), col= "red")
+  #abline(v = 103, lty =2)
+}
 ```
-
 

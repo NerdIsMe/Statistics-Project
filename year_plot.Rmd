@@ -79,6 +79,7 @@ Plot_Year <- function(year)
           out_mat[mat_int,i - 1] = data_col[index[j]]
         }
       }
+    }
       
       # Histogram
       sd = round(sd(data_col/divide[i-2]), digits = 3)
@@ -87,7 +88,7 @@ Plot_Year <- function(year)
       
       sub = paste("Standard Deviation: ", sd, ", Mean: ", mean, ", Skewness: ", s)
       
-      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2]), xlab = x_labs[i - 2], col = brewer.pal(n = 6, name = "RdBu"), sub = sub)
+      hist(data_col/divide[i-2], main = paste("民國", year, "年 ", graph_name[i-2]), xlab = x_labs[i - 2], col = "gray", sub = sub)
       
 
       # # Skewness
@@ -102,7 +103,7 @@ Plot_Year <- function(year)
       
       
       
-    }
+    
   }
   
   # Print outliers
@@ -148,9 +149,10 @@ Plot_Year <- function(year)
 
 
 ```{r}
-years = c(103:107)
+years = c(105:107)
 for (i in years)
 Plot_Year(i)
+
 ```
 
 
