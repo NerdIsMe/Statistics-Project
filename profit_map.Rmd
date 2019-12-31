@@ -1,0 +1,48 @@
+---
+```{r}
+TaiwanMap <- get_map(center=c(lon = 121.5142, lat = 25.10903), zoom = 11, maptype = "toner-lite")
+routes <- jsonlite::fromJSON(txt = "Routes.json")
+
+getRoute <- function(index) {
+  geo <- as.data.frame(matrix(as.numeric(unlist(strsplit(unlist(as.list(strsplit(substring(routes$Geometry[index],13,nchar(routes$Geometry[index])-1), ", ")[[1]])), " "))), ncol=2, byrow=TRUE))
+  colnames(geo) <- c("longitude", "latitude")
+  return(geo)
+}
+
+df <- data_frame(0)
+
+for(i in c(1:nrow(routes)))
+{
+  for(j in c(1:nrow(bus_efficiency_revised)))
+  {
+    if(bus_efficiency_revised$Year[j] == "107")
+    {
+      if(routes$RouteName$Zh_tw[i] == bus_efficiency_revised$Name[j])
+      {
+        #print(routes$RouteName$Zh_tw[i])
+        temp <- getRoute(i)
+        temp$group = {0}
+        temp$profit = {bus_efficiency_revised$Average.Profit[j]}
+        df <- bind_rows(df, temp)
+      }
+    }
+  }
+}
+
+df <- df[,2:ncol(df)]
+df <- df[order(df$profit),]
+df <- df[complete.cases(df),]
+p <- df$profit[1]
+j <- 1
+for(i in c(1:nrow(df)))
+{
+  if(is.na(df$profit[i]) || p == df$profit[i]){
+    df$group[i] <- j
+  } else
+  {
+    j <- j+1
+    p <- df$profit[i]
+    df$group[i] <- j
+  }
+}
+```
